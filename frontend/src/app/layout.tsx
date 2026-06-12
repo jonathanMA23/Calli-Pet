@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Calli Pet | Plataforma integral para mascotas',
+  title: 'Calli Pet | Servicios y bienestar para tu mascota',
   description:
-    'Gestión de tutores, mascotas, proveedores, servicios, reservas, pagos y expedientes.',
+    'Reserva servicios, administra a tus mascotas, consulta expedientes y encuentra opciones de adopción.',
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

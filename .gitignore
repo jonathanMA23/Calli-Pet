@@ -1,7 +1,7 @@
 # macOS
 .DS_Store
 
-# Variables privadas
+# Variables locales
 .env
 .env.local
 .env.development.local
@@ -14,11 +14,9 @@ node_modules/
 frontend/node_modules/
 backend/node_modules/
 
-# Next.js
+# Compilaciones
 frontend/.next/
 frontend/out/
-
-# NestJS
 backend/dist/
 
 # Registros
