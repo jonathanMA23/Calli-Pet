@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Calli Pet | Bienestar y servicios para mascotas',
+  title: 'Calli Pet | Plataforma integral para mascotas',
   description:
-    'Encuentra profesionales, agenda servicios y administra el bienestar de tu mascota.',
+    'Gestión de tutores, mascotas, proveedores, servicios, reservas, pagos y expedientes.',
 };
 
 export default function RootLayout({
