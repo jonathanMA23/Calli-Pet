@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { OperationsManager } from './operations-manager';
+import { UserPortal } from './user-portal';
 
 export const metadata = {
-  title: 'Panel operativo | Calli Pet',
-  description: 'Administración integral de la plataforma Calli Pet.',
+  title: 'Mi cuenta | Calli Pet',
+  description:
+    'Administra tus mascotas, reserva servicios y consulta opciones de adopción.',
 };
 
-export default function PlatformPage() {
+export default function AccountPage() {
   return (
     <main className="min-h-screen bg-[#f7f3ea] text-[#171717]">
       <header className="border-b border-black/10 bg-white">
@@ -18,12 +19,12 @@ export default function PlatformPage() {
             className="rounded-full border border-black/15 px-5 py-2.5 text-sm font-semibold"
             href="/"
           >
-            Sitio principal
+            Volver al inicio
           </Link>
         </div>
       </header>
 
-      <OperationsManager />
+      <UserPortal />
     </main>
   );
 }

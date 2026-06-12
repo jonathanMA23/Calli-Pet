@@ -3,32 +3,27 @@ import Link from 'next/link';
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1';
 
-interface Booking {
-  id: string;
-  scheduledAt: string;
-  status: string;
-  totalAmount: number;
-  userName: string;
-  petName: string;
-  providerName: string;
-  serviceName: string;
-}
-
-interface Dashboard {
-  users: number;
+interface HomeData {
+  profile: {
+    fullName: string;
+  };
   pets: number;
-  providers: number;
-  services: number;
   bookings: number;
-  incidents: number;
-  notifications: number;
-  revenue: number;
-  recentBookings: Booking[];
+  unreadNotifications: number;
+  adoptionListings: number;
+  services: number;
+  nextBooking: null | {
+    petName: string;
+    providerName: string;
+    serviceName: string;
+    scheduledAt: string;
+    status: string;
+  };
 }
 
-async function getDashboard(): Promise<Dashboard | null> {
+async function getHome(): Promise<HomeData | null> {
   try {
-    const response = await fetch(`${API_URL}/dashboard`, {
+    const response = await fetch(`${API_URL}/portal/home`, {
       cache: 'no-store',
       signal: AbortSignal.timeout(2500),
     });
@@ -37,7 +32,7 @@ async function getDashboard(): Promise<Dashboard | null> {
       return null;
     }
 
-    return (await response.json()) as Dashboard;
+    return (await response.json()) as HomeData;
   } catch {
     return null;
   }
@@ -55,8 +50,7 @@ function PawIcon() {
 }
 
 export default async function Home() {
-  const dashboard = await getDashboard();
-  const recentBooking = dashboard?.recentBookings?.[0];
+  const home = await getHome();
 
   return (
     <main className="min-h-screen bg-[#f7f3ea] text-[#171717]">
@@ -71,15 +65,15 @@ export default async function Home() {
 
           <nav className="hidden items-center gap-8 text-sm font-semibold md:flex">
             <a href="#servicios">Servicios</a>
-            <a href="#plataforma">Plataforma</a>
-            <a href="#operacion">Operación</a>
+            <a href="#adopcion">Adopción</a>
+            <a href="#confianza">Confianza</a>
           </nav>
 
           <Link
             className="rounded-full bg-[#171717] px-5 py-3 text-sm font-semibold text-white hover:bg-[#a64b2a]"
             href="/app"
           >
-            Abrir plataforma
+            Entrar a mi cuenta
           </Link>
         </div>
       </header>
@@ -87,29 +81,28 @@ export default async function Home() {
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
         <div>
           <p className="inline-flex rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-semibold">
-            Ecosistema digital para mascotas
+            Cuidado, salud y compañía
           </p>
           <h1 className="mt-6 max-w-3xl text-5xl font-bold leading-[1.03] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
-            Salud, cuidado y servicios
-            <span className="block text-[#a64b2a]">en un solo lugar.</span>
+            Todo lo que tu mascota necesita,
+            <span className="block text-[#a64b2a]">en una sola cuenta.</span>
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-[#5f5f5f]">
-            Administra tutores, mascotas, proveedores, servicios, reservas,
-            pagos, evaluaciones, incidentes, expedientes y notificaciones desde
-            una misma plataforma.
+            Encuentra servicios verificados, reserva para tus mascotas,
+            consulta su expediente y descubre opciones de adopción cerca de ti.
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               className="rounded-full bg-[#a64b2a] px-7 py-4 font-semibold text-white hover:bg-[#843a21]"
               href="/app"
             >
-              Gestionar operación
+              Buscar un servicio
             </Link>
             <a
               className="rounded-full border border-black/15 bg-white px-7 py-4 font-semibold"
-              href="#plataforma"
+              href="#adopcion"
             >
-              Conocer módulos
+              Conocer adopciones
             </a>
           </div>
         </div>
@@ -117,14 +110,18 @@ export default async function Home() {
         <div className="rounded-[2rem] bg-[#171717] p-7 text-white shadow-2xl">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-white/55">Actividad reciente</p>
+              <p className="text-sm text-white/55">
+                {home ? `Hola, ${home.profile.fullName}` : 'Tu cuenta Calli Pet'}
+              </p>
               <h2 className="mt-2 text-3xl font-bold">
-                {recentBooking ? recentBooking.petName : 'Operación disponible'}
+                {home?.nextBooking
+                  ? home.nextBooking.petName
+                  : 'Bienestar organizado'}
               </h2>
               <p className="mt-1 text-white/60">
-                {recentBooking
-                  ? `${recentBooking.serviceName} · ${recentBooking.providerName}`
-                  : 'La plataforma está lista para registrar operaciones'}
+                {home?.nextBooking
+                  ? `${home.nextBooking.serviceName} · ${home.nextBooking.providerName}`
+                  : 'Mascotas, reservas y expediente en un solo lugar'}
               </p>
             </div>
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#a64b2a]">
@@ -135,36 +132,41 @@ export default async function Home() {
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl bg-white/10 p-5">
               <p className="text-xs uppercase tracking-wider text-white/50">
-                Reservas
+                Mis mascotas
               </p>
-              <p className="mt-2 text-3xl font-bold">
-                {dashboard?.bookings ?? 0}
-              </p>
+              <p className="mt-2 text-3xl font-bold">{home?.pets ?? 0}</p>
               <p className="mt-1 text-sm text-white/60">
-                Operaciones registradas
+                Perfiles activos
               </p>
             </div>
             <div className="rounded-2xl bg-white/10 p-5">
               <p className="text-xs uppercase tracking-wider text-white/50">
-                Ingresos registrados
+                Próxima atención
               </p>
-              <p className="mt-2 text-3xl font-bold">
-                ${(dashboard?.revenue ?? 0).toLocaleString('es-MX')}
+              <p className="mt-2 font-semibold">
+                {home?.nextBooking
+                  ? new Date(home.nextBooking.scheduledAt).toLocaleDateString(
+                      'es-MX',
+                      { day: 'numeric', month: 'long' },
+                    )
+                  : 'Sin reservas próximas'}
               </p>
-              <p className="mt-1 text-sm text-white/60">Pagos confirmados</p>
+              <p className="mt-1 text-sm text-white/60">
+                {home?.nextBooking?.status ?? 'Explora servicios disponibles'}
+              </p>
             </div>
           </div>
 
           <div className="mt-5 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
             <span
               className={`h-3 w-3 rounded-full ${
-                dashboard ? 'bg-[#7f936d]' : 'bg-[#b42318]'
+                home ? 'bg-[#7f936d]' : 'bg-[#b42318]'
               }`}
             />
             <span className="font-semibold">
-              {dashboard
-                ? 'Frontend, API y base de datos conectados'
-                : 'La API no está disponible'}
+              {home
+                ? 'Tu información está sincronizada'
+                : 'El servicio no está disponible en este momento'}
             </span>
           </div>
         </div>
@@ -173,10 +175,10 @@ export default async function Home() {
       <section className="border-y border-black/10 bg-white py-12">
         <div className="mx-auto grid max-w-7xl gap-5 px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
           {[
-            ['Tutores', dashboard?.users ?? 0],
-            ['Mascotas', dashboard?.pets ?? 0],
-            ['Proveedores', dashboard?.providers ?? 0],
-            ['Servicios', dashboard?.services ?? 0],
+            ['Servicios disponibles', home?.services ?? 0],
+            ['Reservas realizadas', home?.bookings ?? 0],
+            ['Mascotas en adopción', home?.adoptionListings ?? 0],
+            ['Avisos pendientes', home?.unreadNotifications ?? 0],
           ].map(([label, value]) => (
             <article className="rounded-3xl bg-[#faf8f3] p-6" key={label}>
               <p className="text-sm text-[#6b6b6b]">{label}</p>
@@ -194,14 +196,14 @@ export default async function Home() {
           Servicios
         </p>
         <h2 className="mt-3 max-w-3xl text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
-          Una red para atender las necesidades de cada mascota
+          Reserva cuidados confiables para cada etapa
         </h2>
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {[
             ['Veterinaria', 'Consultas, seguimiento y expediente digital.'],
             ['Grooming', 'Higiene, estética y cuidado especializado.'],
-            ['Paseos', 'Agenda, disponibilidad y seguimiento.'],
-            ['Cuidado', 'Atención a domicilio y servicios programados.'],
+            ['Paseos', 'Disponibilidad, agenda y atención programada.'],
+            ['Cuidado', 'Servicios a domicilio y acompañamiento.'],
           ].map(([title, description]) => (
             <article
               className="rounded-3xl border border-black/10 bg-white p-6"
@@ -217,59 +219,47 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="bg-[#171717] py-24 text-white" id="plataforma">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8">
-          <p className="font-bold uppercase tracking-[0.18em] text-[#d88a67]">
-            Plataforma integral
-          </p>
-          <h2 className="mt-3 max-w-3xl text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
-            Módulos conectados con información persistente
-          </h2>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              'Usuarios y roles',
-              'Mascotas y expedientes',
-              'Proveedores y servicios',
-              'Agenda y reservas',
-              'Pagos y comisiones',
-              'Evaluaciones',
-              'Incidentes',
-              'Notificaciones',
-            ].map((item, index) => (
-              <article
-                className="rounded-3xl border border-white/10 bg-white/5 p-6"
-                key={item}
-              >
-                <p className="text-sm font-bold text-[#d88a67]">
-                  {String(index + 1).padStart(2, '0')}
-                </p>
-                <h3 className="mt-4 text-xl font-semibold">{item}</h3>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-24 lg:px-8" id="operacion">
-        <div className="rounded-[2rem] bg-[#a64b2a] px-7 py-14 text-white sm:px-12 lg:flex lg:items-center lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="font-bold uppercase tracking-[0.18em] text-white/70">
-              Operación
+      <section className="bg-[#171717] py-24 text-white" id="adopcion">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
+          <div>
+            <p className="font-bold uppercase tracking-[0.18em] text-[#d88a67]">
+              Adopción responsable
             </p>
-            <h2 className="mt-3 text-4xl font-bold tracking-[-0.03em]">
-              Administra el ecosistema desde un solo panel
+            <h2 className="mt-3 max-w-3xl text-4xl font-bold tracking-[-0.03em] sm:text-5xl">
+              Encuentra una nueva compañía para tu hogar
             </h2>
-            <p className="mt-5 text-lg leading-8 text-white/75">
-              Los formularios y acciones del panel trabajan directamente con
-              NestJS y PostgreSQL.
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">
+              Consulta perfiles disponibles y envía tu solicitud directamente
+              desde tu cuenta.
             </p>
           </div>
           <Link
-            className="mt-8 inline-flex rounded-full bg-white px-7 py-4 font-semibold text-[#171717] lg:mt-0"
+            className="inline-flex rounded-full bg-white px-7 py-4 font-semibold text-[#171717]"
             href="/app"
           >
-            Entrar al panel
+            Ver mascotas en adopción
           </Link>
+        </div>
+      </section>
+
+      <section
+        className="mx-auto max-w-7xl px-5 py-24 lg:px-8"
+        id="confianza"
+      >
+        <div className="grid gap-5 md:grid-cols-3">
+          {[
+            ['Proveedores verificados', 'Cada servicio publicado pertenece a un proveedor asociado.'],
+            ['Información protegida', 'Tu cuenta muestra únicamente tus mascotas y tus reservas.'],
+            ['Seguimiento continuo', 'Recibe avisos, consulta expedientes y conserva tu historial.'],
+          ].map(([title, text]) => (
+            <article
+              className="rounded-3xl border border-black/10 bg-white p-7"
+              key={title}
+            >
+              <h3 className="text-xl font-bold">{title}</h3>
+              <p className="mt-3 leading-7 text-[#666666]">{text}</p>
+            </article>
+          ))}
         </div>
       </section>
 
