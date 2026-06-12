@@ -1,43 +1,21 @@
-# Calli Pet Platform
+# Interfaz inicial de Calli Pet
 
-Repositorio académico y técnico de Calli Pet.
+Archivos incluidos:
 
-## Contenido
-- Modelo PostgreSQL.
-- Datos de prueba.
-- Diagrama entidad-relación.
-- Reglas de negocio.
-- Espacios para backend y frontend.
-- Ejecución local con Docker Compose.
+- `src/app/page.tsx`
+- `src/app/globals.css`
+- `src/app/layout.tsx`
 
-## Inicio rápido en macOS
+Copia el contenido sobre la carpeta `frontend` ya creada con Next.js.
 
-```bash
-cp .env.example .env
-docker compose up -d
-docker compose ps
-docker exec -it calli_pet_db psql -U callipet -d callipet
-```
-
-Dentro de PostgreSQL:
-
-```sql
-\dt
-SELECT * FROM bookings;
-\q
-```
-
-## Reiniciar la base
-
-```bash
-./scripts/reset-db.sh
-```
-
-## Estructura
+La página consulta por defecto:
 
 ```text
-database/   Scripts SQL
-docs/       Modelo y documentación
-backend/    Implementación futura de API
-frontend/   Implementación futura de aplicación web
+http://localhost:3001/api/v1
+```
+
+Para usar otra API:
+
+```bash
+NEXT_PUBLIC_API_URL=http://otra-direccion/api/v1 npm run dev
 ```

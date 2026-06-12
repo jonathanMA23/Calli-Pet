@@ -1,0 +1,28 @@
+{
+  "name": "calli-pet",
+  "version": "1.0.0",
+  "description": "Repositorio académico y técnico de Calli Pet.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently -n WEB,API \"npm --prefix frontend run dev\" \"PORT=3001 npm --prefix backend run start:dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonathanMA23/Calli-Pet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jonathanMA23/Calli-Pet/issues"
+  },
+  "homepage": "https://github.com/jonathanMA23/Calli-Pet#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}
